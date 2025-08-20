@@ -512,10 +512,22 @@
             const form = new FormData(this);
             formData = Object.fromEntries(form.entries());
             
+            // Ensure all fields are included, even if empty
+            formData.name = document.getElementById('name').value || '';
+            formData.email = document.getElementById('email').value || '';
+            formData.phone = document.getElementById('phone').value || '';
+            formData.clientId = document.getElementById('clientId').value || '';
+            formData.workDetails = document.getElementById('workDetails').value || '';
+            formData.outcome = document.getElementById('outcome').value || '';
+            formData.startMonth = document.getElementById('startMonth').value || '';
+            formData.startDay = document.getElementById('startDay').value || '';
+            
             // Combine month and day for start date
             if (formData.startMonth && formData.startDay) {
                 const monthName = document.querySelector(`#startMonth option[value="${formData.startMonth}"]`).textContent;
                 formData.startDate = `${monthName} ${parseInt(formData.startDay)}`;
+            } else {
+                formData.startDate = '';
             }
             
             showConfirmationScreen();
@@ -573,8 +585,21 @@
             container.classList.add('loading');
             confirmBtn.textContent = 'Submitting...';
             
-            // Add timestamp
-            formData.submittedAt = new Date().toISOString();
+            // Ensure all form fields are captured and included
+            const finalData = {
+                name: document.getElementById('name').value || '',
+                email: document.getElementById('email').value || '',
+                phone: document.getElementById('phone').value || '',
+                clientId: document.getElementById('clientId').value || '',
+                workDetails: document.getElementById('workDetails').value || '',
+                outcome: document.getElementById('outcome').value || '',
+                startMonth: document.getElementById('startMonth').value || '',
+                startDay: document.getElementById('startDay').value || '',
+                startDate: formData.startDate || '',
+                submittedAt: new Date().toISOString()
+            };
+            
+            console.log('Sending data to webhook:', finalData); // For debugging
             
             try {
                 const response = await fetch('https://hook.eu2.make.com/85gyjmo134cis9xsykr8w6ms2ihg3unp', {
@@ -582,7 +607,7 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(finalData)
                 });
                 
                 if (response.ok) {
