@@ -364,6 +364,13 @@
             background: #9ca3af;
         }
 
+        .helper-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -467,9 +474,7 @@
                             <div class="date-input-wrapper">
                                 <input type="date" id="start_date" name="start_date">
                             </div>
-                            <p style="font-size: 0.85rem; color: #666; margin-top: 8px; font-style: italic;">
-                                If unsure, please just pick an estimate but be sure to change the actual date inside of the project management.
-                            </p>
+                            <p class="helper-text">If unsure, please just pick an estimate but be sure to change the actual date inside of the project management.</p>
                         </div>
                     </div>
 
@@ -494,15 +499,23 @@
                             </select>
                         </div>
 
+                        <div class="form-group" id="other_project_type_group" style="display: none;">
+                            <label for="other_project_type">Please specify project type <span class="required">*</span></label>
+                            <input type="text" id="other_project_type" name="other_project_type" placeholder="Enter project type">
+                            <p class="helper-text">e.g., Window Installation, Conservatory Build, Garage Conversion</p>
+                        </div>
+
                         <div class="form-group">
                             <label for="work_location">Where will the work be done? <span class="required">*</span></label>
-                            <input type="text" id="work_location" name="work_location" placeholder="e.g., Kitchen, Master Bathroom, Entire Ground Floor">
+                            <input type="text" id="work_location" name="work_location" placeholder="Enter work location">
+                            <p class="helper-text">e.g., Kitchen, Master Bathroom, Entire Ground Floor</p>
                         </div>
 
                         <div class="form-group">
                             <label for="work_description">What needs to be done? <span class="required">*</span></label>
-                            <textarea id="work_description" name="work_description" placeholder="e.g., Remove old kitchen units and install new ones, replaster walls and ceiling, install laminate flooring throughout" maxlength="300"></textarea>
-                            <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Maximum 300 characters</p>
+                            <textarea id="work_description" name="work_description" placeholder="Enter work description" maxlength="300"></textarea>
+                            <p class="helper-text">e.g., Remove old kitchen units and install new ones, replaster walls and ceiling, install laminate flooring throughout</p>
+                            <p class="helper-text">Maximum 300 characters</p>
                         </div>
 
                         <div class="form-group">
@@ -516,20 +529,23 @@
 
                         <div class="form-group" id="client_materials_group" style="display: none;">
                             <label for="client_materials_list">Which materials will the client provide? <span class="required">*</span></label>
-                            <textarea id="client_materials_list" name="client_materials_list" placeholder="e.g., Light fixtures, tiles, paint colors, cabinet handles" maxlength="250" style="min-height: 80px;"></textarea>
-                            <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Maximum 250 characters</p>
+                            <textarea id="client_materials_list" name="client_materials_list" placeholder="Enter client materials" maxlength="250" style="min-height: 80px;"></textarea>
+                            <p class="helper-text">e.g., Light fixtures, tiles, paint colors, cabinet handles</p>
+                            <p class="helper-text">Maximum 250 characters</p>
                         </div>
 
                         <div class="form-group">
                             <label for="special_requirements">Any special requirements or concerns? (Optional)</label>
-                            <input type="text" id="special_requirements" name="special_requirements" placeholder="e.g., Must match existing woodwork, eco-friendly materials preferred, work around pets" maxlength="150">
-                            <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Maximum 150 characters</p>
+                            <input type="text" id="special_requirements" name="special_requirements" placeholder="Enter special requirements" maxlength="150">
+                            <p class="helper-text">e.g., Must match existing woodwork, eco-friendly materials preferred, work around pets</p>
+                            <p class="helper-text">Maximum 150 characters</p>
                         </div>
 
                         <div class="form-group">
                             <label for="not_included">What's NOT Included (Optional)</label>
-                            <textarea id="not_included" name="not_included" placeholder="e.g., Painting/decorating, disposal of old materials, repairs to adjacent areas, permits/inspections" maxlength="300" style="min-height: 80px;"></textarea>
-                            <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Maximum 300 characters</p>
+                            <textarea id="not_included" name="not_included" placeholder="Enter exclusions" maxlength="300" style="min-height: 80px;"></textarea>
+                            <p class="helper-text">e.g., Painting/decorating, disposal of old materials, repairs to adjacent areas, permits/inspections</p>
+                            <p class="helper-text">Maximum 300 characters</p>
                         </div>
                     </div>
 
@@ -608,6 +624,23 @@
                 document.getElementById('special_requirements').value = '';
                 document.getElementById('not_included').value = '';
                 document.getElementById('client_materials_group').style.display = 'none';
+                document.getElementById('other_project_type').value = '';
+                document.getElementById('other_project_type_group').style.display = 'none';
+            }
+        });
+
+        // Show/hide other project type field
+        document.getElementById('project_type').addEventListener('change', function() {
+            const otherProjectTypeGroup = document.getElementById('other_project_type_group');
+            const otherProjectTypeInput = document.getElementById('other_project_type');
+            
+            if (this.value === 'Other') {
+                otherProjectTypeGroup.style.display = 'block';
+                otherProjectTypeInput.required = true;
+            } else {
+                otherProjectTypeGroup.style.display = 'none';
+                otherProjectTypeInput.required = false;
+                otherProjectTypeInput.value = '';
             }
         });
 
@@ -649,6 +682,12 @@
         document.getElementById('consultationForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
+            // Determine the actual project type value
+            let projectTypeValue = document.getElementById('project_type').value;
+            if (projectTypeValue === 'Other') {
+                projectTypeValue = document.getElementById('other_project_type').value;
+            }
+            
             // Gather all form data
             formData = {
                 name: document.getElementById('name').value || '',
@@ -658,7 +697,7 @@
                 clientAddress: document.getElementById('client_address').value || '',
                 outcome: document.getElementById('outcome').value || '',
                 startDate: document.getElementById('start_date').value || '',
-                projectType: document.getElementById('project_type').value || '',
+                projectType: projectTypeValue || '',
                 workLocation: document.getElementById('work_location').value || '',
                 workDescription: document.getElementById('work_description').value || '',
                 materialsResponsibility: document.getElementById('materials_responsibility').value || '',
@@ -937,6 +976,8 @@
             document.getElementById('consultationForm').reset();
             document.getElementById('client_materials_group').style.display = 'none';
             document.getElementById('client_materials_list').required = false;
+            document.getElementById('other_project_type_group').style.display = 'none';
+            document.getElementById('other_project_type').required = false;
             document.getElementById('projectStartSection').classList.add('hidden');
             document.getElementById('workDetailsSection').classList.add('hidden');
             formData = {};
